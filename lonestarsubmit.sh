@@ -11,7 +11,6 @@ export IBRUN_QUIET=1
 export IBRUN_TASKS_PER_NODE=68
 
 output=node1
-doresume=0
 numproc=68
 
 # For each model
