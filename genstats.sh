@@ -26,21 +26,21 @@ queries[1]=--query="SELECT *, min(cupti.activity.duration) as \"Min\", avg(cupti
 
 for i in "${!queries[@]}"
 do
-	echo "##########"
-	echo "## "${labels[i]}""
-	echo "##########"
-	if (( $# == 0 )); then
-		for filename in *.cali; do
-			[ -e "$filename" ] || continue
-			../../Caliper/install/bin/cali-query "${queries[i]}" "$filename"
-		done
-	else
-		for filename in "$1"*; do
-			[ -e "$filename" ] || continue
-			../../Caliper/install/bin/cali-query "${queries[i]}" "$filename"
-		done
-	fi
-	echo "##########"
-	echo "## Finished "${labels[i]}""
-	echo "##########"
+  echo "##########"
+  echo "## "${labels[i]}""
+  echo "##########"
+  if (( $# == 0 )); then
+    for filename in *.cali; do
+      [ -e "$filename" ] || continue
+      ../../Caliper/install/bin/cali-query "${queries[i]}" "$filename"
+    done
+  else
+    for filename in "$1"*; do
+      [ -e "$filename" ] || continue
+      ../../Caliper/install/bin/cali-query "${queries[i]}" "$filename"
+    done
+  fi
+  echo "##########"
+  echo "## Finished "${labels[i]}""
+  echo "##########"
 done

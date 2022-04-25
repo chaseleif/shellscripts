@@ -15,8 +15,8 @@ echo =============================
 echo "start - heuristic number $HFUN: $(date +%Y-%m-%d-%H:%M:%S)" >> testtime$HFUN
 echo "start - heuristic number $HFUN: $(date +%Y-%m-%d-%H:%M:%S)";
 while read line
-	do
-		./astar h$HFUN "$line" testing
+  do
+    ./astar h$HFUN "$line" testing
 done < $INPUT | sort -n -r -k 1,1 >> testtime$HFUN
 
 echo "end - heuristic number $HFUN: $(date +%Y-%m-%d-%H:%M:%S)" >> testtime$HFUN

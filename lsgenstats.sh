@@ -28,21 +28,21 @@ queries[2]=--query="SELECT *, min(time.inclusive.duration) as \"Min\", avg(time.
 
 for i in "${!queries[@]}"
 do
-	echo "##########"
-	echo "## "${labels[i]}""
-	echo "##########"
-	if (( $# == 0 )); then
-		for filename in *.cali; do
-			[ -e "$filename" ] || continue
-			../../Caliper/install/bin/cali-query "${queries[i]}" "$filename"
-		done
-	else
-		for filename in "$1"*; do
-			[ -e "$filename" ] || continue
-			../../Caliper/install/bin/cali-query "${queries[i]}" "$filename"
-		done
-	fi
-	echo "##########"
-	echo "## Finished "${labels[i]}""
-	echo "##########"
+  echo "##########"
+  echo "## "${labels[i]}""
+  echo "##########"
+  if (( $# == 0 )); then
+    for filename in *.cali; do
+      [ -e "$filename" ] || continue
+      ../../Caliper/install/bin/cali-query "${queries[i]}" "$filename"
+    done
+  else
+    for filename in "$1"*; do
+      [ -e "$filename" ] || continue
+      ../../Caliper/install/bin/cali-query "${queries[i]}" "$filename"
+    done
+  fi
+  echo "##########"
+  echo "## Finished "${labels[i]}""
+  echo "##########"
 done
