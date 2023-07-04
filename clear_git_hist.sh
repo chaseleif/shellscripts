@@ -3,7 +3,7 @@
 # Adapted from comments at gist.github.com/stephenhardy/5470814
 
 clearrepo() {
-  cd $1
+  cd "$1" || exit
   # New orphan branch
   git checkout --orphan newmain
   # Add everything
