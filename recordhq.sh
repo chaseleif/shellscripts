@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /usr/bin/env bash
 
 ## This script uses ffmpeg to make a screencapture
 ## I have had issues with parameters/changes, and have kept configurations

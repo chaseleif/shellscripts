@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /usr/bin/env bash
 
 ## This script replaces the first occurence in a text file
 ## "int yyleng" -> "yy_size_t yyleng"

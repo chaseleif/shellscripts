@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /usr/bin/env bash
 # run this from an interactive allocation of N nodes
 
 ## This is a copy of a file from:
