@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /usr/bin/env bash
 
 ## This script executes a program with a numeric argument
 ## stdout of the program is fed into a loop

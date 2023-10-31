@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /usr/bin/env bash
 
 ###
 # Running with no arguments will search for all *.cali files in this directory

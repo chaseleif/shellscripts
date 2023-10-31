@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /usr/bin/env bash
 
 ## This script will print the memory that is waiting
 ##  to get written back to disk

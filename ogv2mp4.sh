@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /usr/bin/env bash
 
 ## This script takes 1 argument, an ogv file, and converts to mp4 with ffmpeg
 

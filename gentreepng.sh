@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /usr/bin/env bash
 
 ## This script drives the makedot.py script with an output file
 ## The python script makes a file with is fed into the dot program

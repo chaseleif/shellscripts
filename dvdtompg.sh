@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /usr/bin/env bash
 
 ## This script turns a DVD folder (.vobs) into an mpg
 ## This uses both vobcopy and ffmpeg programs
