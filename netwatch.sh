@@ -38,11 +38,13 @@ lastbreak=0
 printtime() {
   total=$(date "+%s")
   if [ $((total-lastbreak)) -lt 10 ] ; then
-    printf "aborted . . .\n"
+    printf "Aborted\n"
     exit
   fi
   if [ "$lastbreak" -gt 0 ] ; then
     printf '\e[A\e[K'
+  else
+    printf "\n"
   fi
   lastbreak="$total"
   total=$((total-start))
@@ -66,7 +68,7 @@ printf "\nWaiting for network . . ."
 while true ; do
   addr=$(curl --no-fail --connect-timeout 20 "$url" 2> /dev/null)
   if [ "$addr" != "" ] ; then
-    echo "$addr"
+    echo " $addr"
     break
   fi
   sleep 1
