@@ -6,11 +6,9 @@ total=$((total/60))
 mins=$((total%60))
 hours=$((total/60))
 days=$((hours/24))
-if [ $days -gt 0 ] ; then
-  hours=$((hours%24))
-fi
 docomma=0
 if [ $days -gt 0 ] ; then
+  hours=$((hours%24))
   echo -n "$days day"
   if [ $days -ne 1 ] ; then echo -n "s" ; fi
   docomma=1

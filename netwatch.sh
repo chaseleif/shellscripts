@@ -9,8 +9,6 @@ printtime() {
   fi
   if [ "$lastbreak" -gt 0 ] ; then
     printf '\e[A\e[K'
-  else
-    printf "\n"
   fi
   lastbreak="$total"
   total=$((total-start))
@@ -30,21 +28,17 @@ echo "###
 "
 
 date
-printf "\nWaiting for network . . ."
+printf "\nWaiting for network . . .\n"
 while true ; do
   addr=$(curl --no-fail --connect-timeout 20 "$url" 2> /dev/null)
   if [ "$addr" != "" ] ; then
-    echo " $addr"
+    printf "\n%s ~ " "$addr"
     break
   fi
   sleep 1
 done
 
 total=$(($(date "+%s")-start))
-
-if [ "$lastbreak" -eq 0 ] ; then
-  echo -n " "
-fi
 
 printf "Network up !\n\nTotal elapsed time: "
 ./secs2text.sh "$total"
