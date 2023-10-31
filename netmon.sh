@@ -16,13 +16,13 @@ while true ; do
   if [ "$domaini" -eq "${#domains[@]}" ] ; then
     domaini=0
   fi
-  sleep 10
+  sleep $(shuf -i 40-90 --random-source=/dev/urandom -n1)
   try "${domains[$domaini]}" && continue
   domaini=$((domaini+1))
   if [ "$domaini" -eq "${#domains[@]}" ] ; then
     domaini=0
   fi
-  sleep 10
+  sleep $(shuf -i 30-60 --random-source=/dev/urandom -n1)
   try "${domains[$domaini]}" && continue
   date
   echo " ~ Outage start ~"
