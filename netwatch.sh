@@ -41,6 +41,11 @@ while true ; do
 done
 
 total=$(($(date "+%s")-start))
+
+if [ "$lastbreak" -eq 0 ] ; then
+  echo -n " "
+fi
+
 printf "Network up !\n\nTotal elapsed time: "
 ./secs2text.sh "$total"
 date
