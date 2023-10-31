@@ -10,7 +10,6 @@ try() {
   if [ "$domaini" -eq "${#domains[@]}" ] ; then
     domaini=0
   fi
-  return 1
   ping -c1 -q "${domains[$domaini]}" >/dev/null 2>&1 && return 0 || return 1
 }
 
@@ -23,8 +22,8 @@ while true ; do
   try && continue
   sleep "$(shuf -i 30-60 --random-source=/dev/urandom -n1)"
   try && continue
-  date
   echo " ~ Outage start ~"
+  date
   out=$(date "+%s")
   ./netwatch.sh >/dev/null 2>&1
   out=$(($(date "+%s")-out))
@@ -32,5 +31,6 @@ while true ; do
   echo "This outage: $(./secs2text.sh $out)"
   echo "Total outages: $(./secs2text.sh $total)"
   date
+  echo " ~ Outage end ~"
 done
 
