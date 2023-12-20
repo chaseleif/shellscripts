@@ -74,7 +74,7 @@ indices[n]=$((indices[n]-1))
 # The maximum number of combinations to get, used in while loop below
 # To get all combinations, set this number to -1
 # combonumber will be set to -1 when no combinations remain
-combonumber=-1
+combonumber=2
 
 ###
 # Combinations loop
@@ -84,13 +84,20 @@ getcombo combonumber
 # Loop until we have the number of combinations or no more remaining
 while [ "$combonumber" -ne -1 ] ; do
   # Print our combination
+  combo=""
   for i in $(seq 0 "$n") ; do
-    if [ "$i" -gt 0 ] ; then printf " " ; fi
+    if [ "$i" -gt 0 ] ; then combo+=" " ; fi
     read -ra vals <<< "${choices[i]}"
-    printf "%s%s%s" "${names[i]}" "$sep" "${vals[${indices[i]}]}"
+    combo+="${names[i]}$sep${vals[${indices[i]}]}"
   done
-  printf "\n"
+  printf "%s\n" "$combo"
   # Get the next combination
   getcombo combonumber
 done
+
+###
+# If getting a specific combination number
+# Initialize combonumber to the number (at least 1)
+# Then . . . the (original) combonumber combo is
+echo "The final combo: $combo"
 
