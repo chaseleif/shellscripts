@@ -40,6 +40,11 @@ done
 
 total=$(($(date "+%s")-start))
 
+if [ "$lastbreak" -gt 0 ] ; then
+  printf '\e[A\e[K'
+fi
+
 printf "Network up !\n\nTotal elapsed time: "
 ./secs2text.sh "$total"
 date
+
