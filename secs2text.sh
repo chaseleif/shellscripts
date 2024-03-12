@@ -2,6 +2,12 @@
 
 str="$1"
 valstr=(second minute hour day week)
+
+case "$str" in
+  ''|*[!0-9]* ) str=-1 ;;
+  * ) ;;
+esac
+
 vals=($((str%60)))  # secs
 str=$((str/60))
 vals+=($((str%60))) # mins
