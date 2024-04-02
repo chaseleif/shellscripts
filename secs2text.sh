@@ -4,7 +4,7 @@ str="$1"
 valstr=(second minute hour day week)
 
 case "$str" in
-  ''|*[!0-9]* ) str=-1 ;;
+  ''|*[!0-9]* ) echo "seconds must be at least 0, not \"$str\"" && exit ;;
   * ) ;;
 esac
 

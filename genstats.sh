@@ -27,7 +27,7 @@ queries[1]=--query="SELECT *, min(cupti.activity.duration) as \"Min\", avg(cupti
 for i in "${!queries[@]}"
 do
   echo "##########"
-  echo "## "${labels[i]}""
+  echo "## ${labels[i]}"
   echo "##########"
   if (( $# == 0 )); then
     for filename in *.cali; do
@@ -41,6 +41,6 @@ do
     done
   fi
   echo "##########"
-  echo "## Finished "${labels[i]}""
+  echo "## Finished ${labels[i]}"
   echo "##########"
 done
