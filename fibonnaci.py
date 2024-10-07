@@ -3,8 +3,10 @@
 from math import sqrt
 from sys import argv, set_int_max_str_digits
 # larger values of n require this to be increased
+#set_int_max_str_digits((1<<31)-1)
+# The 10,000,000th fibonacci number has 2089877 digits
 # This will handle at least values of n between +/-10000000
-set_int_max_str_digits((1<<31)-1)
+set_int_max_str_digits(2089877)
 
 def getfib(n):
   negative = n < 0
