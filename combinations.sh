@@ -74,7 +74,7 @@ indices[n]=$((indices[n]-1))
 # The maximum number of combinations to get, used in while loop below
 # To get all combinations, set this number to -1
 # combonumber will be set to -1 when no combinations remain
-combonumber=2
+combonumber=-1
 
 ###
 # Combinations loop
@@ -86,7 +86,7 @@ while [ "$combonumber" -ne -1 ] ; do
   # Print our combination
   combo=""
   for i in $(seq 0 "$n") ; do
-    if [ "$i" -gt 0 ] ; then combo+=" " ; fi
+    [ "$i" -gt 0 ] && combo+=" "
     read -ra vals <<< "${choices[i]}"
     combo+="${names[i]}$sep${vals[${indices[i]}]}"
   done
