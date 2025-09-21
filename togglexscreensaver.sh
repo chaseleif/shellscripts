@@ -17,28 +17,31 @@ if ! [ -f "$desktop" ] ; then
   exit
 fi
 
-state="$(perl -anE 'say $F[1] if /^mode:\t/' "$config")"
+mode="$(perl -anE 'say $F[1] if /^mode:\t/' "$config")"
 # screensaver is enabled now
-if [ "$state" == "random" ] ; then
+if [ "$mode" == "random" ] ; then
   # script was invoked with an argument for "to become" and it isn't off
   if [ -n "$1" ] && [ "$1" != "off" ] ; then
     exit
   fi
-  # change xscreensaver mode to off
-  sed -i $'s/^mode:\t\trandom/mode:\t\toff/' "$config"
-  # set the icon for xscreensaver disabled
+  mode="off"
+  lock="False"
   icon="$disabledicon"
-# screensaver is disabled now
-elif [ "$state" == "off" ] ; then
+# screensaver is disabled (or something else) now
+else
   # script was invoked with an argument for "to become" and it wasn't random
   if [ -n "$1" ] && [ "$1" != "random" ] ; then
     exit
   fi
-  # change xscreensaver mode to random
-  sed -i $'s/^mode:\t\toff/mode:\t\trandom/' "$config"
-  # set the icon for xscreensaver enabled
+  mode="random"
+  lock="True"
   icon="$activeicon"
 fi
+
+# update mode
+perl -pi -e "s/^mode:.*$/mode:\t\t$mode/" "$config"
+# update lock
+perl -pi -e "s/^lock:.*$/lock:\t\t$lock/" "$config"
 
 # update timestamp
 now="$(date "+%a %b %e %H:%M:%S %Y")"
