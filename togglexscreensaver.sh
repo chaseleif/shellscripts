@@ -27,8 +27,8 @@ if [ -n "$1" ] && [ "$1" != "off" ] ; then
     [oO][fF][fF]* ) shift ; set -- "off" ;;
     [0]           ) shift ; set -- "off" ;;
   esac;
-  [ "$1" == "$mode" ] && exit
 fi
+[ "$1" == "$mode" ] && exit
 
 # screensaver is enabled now
 if [ "$mode" == "random" ] ; then
