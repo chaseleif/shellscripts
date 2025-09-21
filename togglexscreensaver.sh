@@ -17,39 +17,40 @@ if ! [ -f "$desktop" ] ; then
   exit
 fi
 
+now="$(date "+%a %b %e %H:%M:%S %Y")"
+tsregex="s|^# Written by .*$|# Written by ${0##*/} on ${now}.|"
+
 mode="$(perl -anE 'say $F[1] if /^mode:\t/' "$config")"
+# argument given for new mode, we only swap between off and random
+if [ -n "$1" ] && [ "$1" != "off" ] ; then
+  case "$1" in
+    [oO][fF][fF]* ) shift ; set -- "off" ;;
+    [0]           ) shift ; set -- "off" ;;
+  esac;
+  [ "$1" == "$mode" ] && exit
+fi
+
 # screensaver is enabled now
 if [ "$mode" == "random" ] ; then
-  # script was invoked with an argument for "to become" and it isn't off
-  if [ -n "$1" ] && [ "$1" != "off" ] ; then
-    exit
-  fi
   mode="off"
   lock="False"
   icon="$disabledicon"
 # screensaver is disabled (or something else) now
 else
-  # script was invoked with an argument for "to become" and it wasn't random
-  if [ -n "$1" ] && [ "$1" != "random" ] ; then
-    exit
-  fi
   mode="random"
   lock="True"
   icon="$activeicon"
 fi
 
+# swap the launcher icon
+sed -i "s/Icon=.*/Icon=$icon/" "$desktop"
+
+# update timestamp
+sed -i "$tsregex" "$config"
+# unset the "selected" screensaver
+sed -i $'s/^selected:\t.*$/selected:\t-1/' "$config"
+
 # update mode
 perl -pi -e "s/^mode:.*$/mode:\t\t$mode/" "$config"
 # update lock
 perl -pi -e "s/^lock:.*$/lock:\t\t$lock/" "$config"
-
-# update timestamp
-now="$(date "+%a %b %e %H:%M:%S %Y")"
-regex="s|^# Written by .*$|# Written by ${0##*/} on ${now}.|"
-sed -i "$regex" "$config"
-
-# unset the "selected" screensaver
-sed -i $'s/^selected:\t.*$/selected:\t-1/' "$config"
-
-# swap the launcher icon
-sed -i "s/Icon=.*/Icon=$icon/" "$desktop"
