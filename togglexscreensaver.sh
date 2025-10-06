@@ -22,12 +22,10 @@ tsregex="s|^# Written by .*$|# Written by ${0##*/} on ${now}.|"
 
 mode="$(perl -anE 'say $F[1] if /^mode:\t/' "$config")"
 # argument given for new mode, we only swap between off and random
-if [ -n "$1" ] && [ "$1" != "off" ] ; then
-  case "$1" in
+case "$1" in
     [oO][fF][fF]* ) shift ; set -- "off" ;;
     [0]           ) shift ; set -- "off" ;;
-  esac;
-fi
+esac
 [ "$1" == "$mode" ] && exit
 
 # screensaver is enabled now
