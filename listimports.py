@@ -5,8 +5,8 @@
 import os, re, sys
 
 def findmodules(basepath):
-  fromstmt = re.compile(r'^from\s*(\w+)\s*import')
-  importstmt = re.compile(r'^import\s*(\w+)\s*(,(\s*\w+)\s*)*')
+  fromstmt = re.compile(r'^from\s+(\w+)\s+import')
+  importstmt = re.compile(r'^import\s+(\w+)\s*(,(\s*\w+)\s*)*')
   imports = set()
   for root, dirs, files in os.walk(basepath):
     for file in files:
