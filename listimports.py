@@ -6,15 +6,22 @@
 import os, re, sys
 
 def findmodules(basepath):
+  # path exclude pattern to exclude, e.g., skip an existing venv directory
+  exclude_patterns = [ os.path.sep+'venv' ]
   fromstmt = re.compile(r'^from\s+(\w+)\s+import')
   importstmt = re.compile(r'^import\s+(\w+)\s*(,(\s*\w+)\s*)*')
   imports = set()
   for root, dirs, files in os.walk(basepath):
+    if any([exclude_pattern in root for exclude_pattern in exclude_patterns]):
+      continue
     for file in files:
       if not file.endswith('.py'): continue
       if os.path.samefile(os.path.join(root,file), __file__): continue
-      with open(os.path.join(root,file),'r') as infile:
-        filecontents = [line.strip() for line in infile.readlines()]
+      try:
+        with open(os.path.join(root,file),'r') as infile:
+          filecontents = [line.strip() for line in infile.readlines()]
+      except UnicodeDecodeError:
+        continue
       for line in filecontents:
         match = fromstmt.match(line)
         if match:

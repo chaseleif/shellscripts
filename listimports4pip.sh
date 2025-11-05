@@ -6,7 +6,7 @@
 # if no path is given, python scripts from the present directory are searched
 
 echo -n "pip install"
-for module in $(./listimports.py "$1") ; do
+for module in $(python3 listimports.py "$1") ; do
   python3 -c "import $module" 2>/dev/null || echo -n " $module"
 done
 echo ""
