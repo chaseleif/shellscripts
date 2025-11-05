@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 # Gather a list of imports from Python files within a basepath
+# standalone or feeds the companion script listimports4pip.sh
 
 import os, re, sys
 
