@@ -2,10 +2,14 @@
 #include <stdio.h>
 #include "heap.h"
 
+#define PARENTOF(child) ((child-1)>>1)
+#define LEFTCHILD(parent) ((parent<<1)+1)
+#define RIGHTCHILD(parent) ((parent<<1)+2)
+
 static void pushup(struct voidheap *heap) {
   int child = heap->len - 1;
   while (child) {
-    const int parent = (child-1)>>1;
+    const int parent = PARENTOF(child);
     if (heap->inorder(heap->vals[parent], heap->vals[child]))
       break;
     void *swap = heap->vals[parent];
@@ -15,8 +19,9 @@ static void pushup(struct voidheap *heap) {
   }
 }
 static void pushdown(struct voidheap *heap, int parent) {
-  int left=(parent<<1)+1, right=(parent<<1)+2;
-  while (left<heap->len) {
+  int left;
+  while ((left=LEFTCHILD(parent))<heap->len) {
+    const int right=RIGHTCHILD(parent);
     if (right<heap->len) {
       const int child =
         (heap->inorder(heap->vals[left], heap->vals[right]))
@@ -27,8 +32,6 @@ static void pushdown(struct voidheap *heap, int parent) {
       heap->vals[parent] = heap->vals[child];
       heap->vals[child] = swap;
       parent = child;
-      left = (parent<<1)+1;
-      right = (parent<<1)+2;
     }
     else {
       if (!heap->inorder(heap->vals[parent], heap->vals[left])) {
@@ -69,13 +72,14 @@ void heapinsert(struct voidheap *heap, void *val) {
   pushup(heap);
 }
 void *popheap(struct voidheap *heap) {
+  if (!heap->len) return NULL;
   void *pop = heap->vals[0];
-  heap->vals[0] = heap->vals[heap->len-1];
-  --heap->len;
+  heap->vals[0] = heap->vals[--heap->len];
   pushdown(heap, 0);
   return pop;
 }
 void *popheapindex(struct voidheap *heap, int index) {
+  if (index < 0 || index >= heap->len) return NULL;
   if (!index) return popheap(heap);
   if (index == --heap->len) return heap->vals[heap->len];
   void *pop = heap->vals[index];
