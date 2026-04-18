@@ -1,23 +1,33 @@
 #! /usr/bin/env bash
 
-# getchoice variable choices
-# $1  the variable is set to an element of choices
-# $2+ is the list of choices
+# getchoice varname "${choices[@]}"
 getchoice() {
-  local key index i
-  local -r var="$1"
-  shift
+  # the variable to set is the first argument
+  local -r var="$1" ; shift
+  if [[ ! $var =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] ; then
+    printf "\"%s\" is not a valid variable name\n" "$var"
+    return
+  fi
+  # the choices are the remainder of arguments
+  if [ "$#" -eq 0 ] ; then
+    printf "There are no choices to choose from to set %s\n" "$var"
+    return
+  fi
+  local key index i signal
   local -r choices=("$@") maxindex="$((${#}-1))" mvcursorup="\e[${#}F"
+  # save existing traps to restore them
+  local -r intfn="$(trap -p SIGINT)"
+  local -r termfn="$(trap -p SIGTERM)"
+  local -r hupfn="$(trap -p SIGHUP)"
+  # trap signals to restore state
+  trap 'signal="SIGINT"' SIGINT
+  trap 'signal="SIGTERM"' SIGTERM
+  trap 'signal="SIGHUP"' SIGHUP
+  # hide cursor, FG green ; BG black
+  printf "\e[?25l\e[32;40m"
+  # get a choice
   index=0
-  # hide cursor
-  printf "\e[?25l"
-  # don't leave the cursor hidden
-  trap 'printf "\e[?25h" ; trap - SIGINT ; kill -SIGINT $$' SIGINT
-  trap 'printf "\e[?25h" ; trap - SIGTERM ; kill -SIGTERM $$' SIGTERM
-  trap 'printf "\e[?25h" ; trap - SIGHUP ; kill -SIGHUP $$' SIGHUP
   while true ; do
-    # FG green; BG black
-    printf "\e[32;40m"
     for (( i=0; i<="$maxindex"; ++i )) ; do
       if [ "$i" -eq "$index" ] ; then
         # 1m bold 22m reset bold
@@ -27,13 +37,12 @@ getchoice() {
         printf "  %s\e[0K\n" "${choices[i]}"
       fi
     done
-    # reset color
-    printf "\e[0m"
-    while true ; do
-      IFS= read -r -s -n1 key
-      [ "$key" == "" ] && break
+    while [ -z "$signal" ] ; do
+      if IFS= read -r -s -n1 -t 0.2 key ; then
+        [ -z "$key" ] && break
+      fi
       if [ "$key" == $'\e' ] ; then
-        IFS= read -r -s -n2 -t0.001 key
+        IFS= read -r -s -n2 -t0.05 key
         if [ "$key" == '[A' ] && [ "$index" -gt 0 ] ; then
           ((--index))
           break
@@ -43,28 +52,42 @@ getchoice() {
         fi
       fi
     done
-    [ "$key" == "" ] && break
-    # F move cursor to beginning of line # lines up
+    [[ -n "$signal" || -z "$key" ]] && break
+    # nF move cursor to beginning of line n lines up
     printf "%b" "$mvcursorup"
   done
-  # restore cursor
-  printf "\e[?25h"
-  printf -v "$var" "%s" "${choices[$index]}"
+  # restore state
+  # remove our traps
+  trap - SIGINT SIGTERM SIGHUP
+  # restore the cursor and reset the color
+  printf "\e[?25h\e[0m"
+  # restore any previous traps
+  [ -n "$intfn" ] && eval "$intfn"
+  [ -n "$termfn" ] && eval "$termfn"
+  [ -n "$hupfn" ] && eval "$hupfn"
+  # reraise signal
+  if [ -n "$signal" ] ; then
+    kill -"$signal" "$$"
+  # put choice into variable
+  else
+    printf -v "$var" "%s" "${choices[$index]}"
+  fi
 }
-choices=(
-  "yes"
-  "no"
-  "maybe"
-  "skip"
-)
 
-echo "Well?"
-choice="skip"
-getchoice choice "${choices[@]}"
-
-case "$choice" in
-  "yes")   echo "ok!"  ;;
-  "no")    echo "ok.." ;;
-  "maybe") echo "ok?"  ;;
-  "skip")  echo "fine" ;;
-esac
+if false ; then
+  choices=(
+    "yes"
+    "no"
+    "maybe"
+    "skip"
+  )
+  echo "Well?"
+  choice="skip"
+  getchoice choice "${choices[@]}"
+  case "$choice" in
+    "yes")   echo "ok!"  ;;
+    "no")    echo "ok.." ;;
+    "maybe") echo "ok?"  ;;
+    "skip")  echo "fine" ;;
+  esac
+fi
