@@ -43,11 +43,21 @@ getchoice() {
       fi
       if [ "$key" == $'\e' ] ; then
         IFS= read -r -s -n2 -t0.05 key
+        # up
         if [ "$key" == '[A' ] && [ "$index" -gt 0 ] ; then
           ((--index))
           break
+        # home
+        elif [ "$key" == '[H' ] && [ "$index" -gt 0 ] ; then
+          index=0
+          break
+        # down
         elif [ "$key" == '[B' ] && [ "$index" -lt "$maxindex" ] ; then
           ((++index))
+          break
+        # end
+        elif [ "$key" == '[F' ] && [ "$index" -lt "$maxindex" ] ; then
+          index="$maxindex"
           break
         fi
       fi
