@@ -21,9 +21,7 @@ done
 unset files
 
 # our choices which include model names
-choices=("${!models[@]}")
-choices=("Run Server" "Download New" "${choices[@]}")
-choices=("${choices[@]}" "Quit")
+choices=("Run Server" "Download New" "${!models[@]}" "Quit")
 
 # get the choice; returns empty on, e.g., ctrl-c
 source "$shellscripts"/choiceprompt.sh
