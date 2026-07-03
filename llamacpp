@@ -1,0 +1,77 @@
+#! /usr/bin/env bash
+
+### Paths
+# path to llm root, contains paths for both `HF_HOME` and `LLAMA_CACHE`
+llmsroot="$HOME"/.llms
+# shellscripts path for `choiceprompt.sh` to use the getchoice function
+shellscripts="$HOME"/git/shellscripts
+# the `build/bin` directory of `llama.cpp`, or path containing `llama-*` bins
+llamacppbin="$HOME"/git/llama.cpp/build/bin
+
+# find `.gguf` files within `llmsroot`
+mapfile -d '' files < <(find "$llmsroot" -name '*.gguf' -print0)
+unset llmsroot
+
+# map basename of each gguf to its full path
+declare -A models
+for file in "${files[@]}" ; do
+  modelname="$(basename "$file")"
+  models["$modelname"]="$file"
+done
+unset files
+
+# our choices which include model names
+choices=("${!models[@]}")
+choices=("Run Server" "Download New" "${choices[@]}")
+choices=("${choices[@]}" "Quit")
+
+# get the choice; returns empty on, e.g., ctrl-c
+source "$shellscripts"/choiceprompt.sh
+getchoice choice "${choices[@]}"
+unset -f getchoice
+
+# shellcheck disable=SC2154 # choice _is_ assigned by the getchoice function
+# if we do a command we set -x to echo the command ran
+if [ "$choice" == "Run Server" ] ; then
+  unset choice choices models
+  # use exec to exit this script with llama-server
+  set -x
+  exec "$llamacppbin"/llama-server
+elif [ "$choice" == "Download New" ] ; then
+  # download a model from Hugging Face, get the name
+  echo "HF repo format, expect <user>/model>[:quant]"
+  read -r -p "Enter model name: " model
+  # quit if we don't have a name
+  if [ -z "$model" ] ; then
+    echo "No model entered"
+    exit 0
+  fi
+  # to download new model we'll change the flag to -hf (huggingface)
+  modelflag="-hf"
+elif [ "$choice" == "Quit" ] ; then
+  # just quit
+  exit 0
+else
+  # any other choice is an index of the `models` associative array
+  # we're running an existing model, get the path and set the flag
+  modelflag="-m"
+  model="${models[$choice]}"
+fi
+unset choice choices models
+# run the command
+set -x
+exec "$llamacppbin"/llama-cli \
+  "$modelflag" "$model" \
+  --jinja \
+  --color on \
+  -ngl 99 \
+  -fa auto \
+  -sm row \
+  --temp 0.6 \
+  --top-k 20 \
+  --top-p 0.95 \
+  --min-p 0 \
+  --presence-penalty 1.5 \
+  -c 40960 \
+  -n 32768 \
+  --no-context-shift
