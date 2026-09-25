@@ -1,21 +1,33 @@
 #! /usr/bin/env bash
 
-# chbkg.sh
-# Change the background to a random image with feh
-
 # DISPLAY may not be set, e.g., when ran from cron
-# this default may need to change: echo "$DISPLAY"
-# set DISPLAY to ":0.0" if it isn't defined or is empty
-: "${DISPLAY:=":0.0"}"
-# The path with the images to choose from
-bgdir="/usr/share/backgrounds"
+: "${DISPLAY:=":0"}"
 
-# Only run if the display is available
+# Don't run if no display available
 xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 || exit
 
-# Get a list of xscreensaver pids
-mapfile -t screensaver < <(pgrep xscreensaver)
-# If the screensaver is running then there will be at least 2 processes
-if [ "${#screensaver[@]}" -lt 2 ] ; then
-  DISPLAY="$DISPLAY" feh --no-fehbg -z --bg-scale "$bgdir"
+# The path to choose images from
+bgdir="/usr/share/backgrounds"
+
+# Number of xscreensaver processes
+mapfile -t list < <(pgrep xscreensaver)
+# If the screensaver isn't active
+if [ "${#list[@]}" -lt 2 ] ; then
+  # Fill the choice list when no choices available
+  [ -s ~/.fehchoices ] || ls "$bgdir"/*.* > ~/.fehchoices
+  # The list of choices
+  mapfile -t list < ~/.fehchoices
+  # The choice index
+  choice=$((RANDOM % ${#list[@]}))
+  # Set the background
+  DISPLAY="$DISPLAY" /usr/bin/feh -z --bg-fill "${list[choice]}"
+  # use a temporary file to trim the list
+  tmpfile="$(mktemp)"
+  if grep -v "${list[choice]}" ~/.fehchoices > "$tmpfile" ; then
+    # the new list is trimmed
+    mv "$tmpfile" ~/.fehchoices
+  else
+    # nothing remaining, remove the tmp file and the list file
+    rm -f "$tmpfile" ~/.fehchoices
+  fi
 fi
