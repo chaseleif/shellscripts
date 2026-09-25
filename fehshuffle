@@ -2,35 +2,44 @@
 
 # DISPLAY may not be set, e.g., when ran from cron
 : "${DISPLAY:=":0"}"
-
-# Don't run if no display available
-xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 || exit
-
 # The path to choose images from
 bgdir="/usr/share/backgrounds"
 
-# Number of xscreensaver processes
-mapfile -t list < <(pgrep xscreensaver)
-# If the screensaver isn't active
-# Check the number (while no screensaver is active)
-# `pgrep xscreensaver` prints matching PIDs
-# if there is 1 then -lt 2, if there are 2 then -le 2
-if [ "${#list[@]}" -le 2 ] ; then
-  # Fill the choice list when no choices available
-  [ -s ~/.fehchoices ] || ls "$bgdir"/*.* > ~/.fehchoices
-  # The list of choices
-  mapfile -t list < ~/.fehchoices
-  # The choice index
-  choice=$((RANDOM % ${#list[@]}))
-  # Set the background
-  DISPLAY="$DISPLAY" /usr/bin/feh -z --bg-fill "${list[choice]}"
-  # use a temporary file to trim the list
-  tmpfile="$(mktemp)"
-  if grep -v "${list[choice]}" ~/.fehchoices > "$tmpfile" ; then
-    # the new list is trimmed
-    mv "$tmpfile" ~/.fehchoices
-  else
-    # nothing remaining, remove the tmp file and the list file
-    rm -f "$tmpfile" ~/.fehchoices
+# Don't run if the display is off
+if xset q 2>/dev/null | grep -q 'Monitor is Off' ; then
+  exit 0
+# Don't run if xscreensaver is running
+elif xscreensaver-command -time 2>/dev/null |
+    grep -qE 'screen (blanked|locked)' ; then
+  exit 0
+fi
+
+# An argument is given when used as a startup script
+if [ -n "$1" ] ; then
+  # commands here run once on X login, with a slight delay
+  xrdb -merge ~/.Xresources
+  # Reuse the last background set
+  if [ -f ~/.fehbg ] ; then
+    ~/.fehbg
+    exit 0
   fi
+  # No background was set, proceed to set a background
+fi
+
+# Fill the choice list when no choices available
+[ -s ~/.fehchoices ] || ls "$bgdir"/* > ~/.fehchoices
+# The list of choices
+mapfile -t list < ~/.fehchoices
+# The choice index
+choice=$((RANDOM % ${#list[@]}))
+# Set the background
+DISPLAY="$DISPLAY" /usr/bin/feh -z --bg-fill "${list[choice]}"
+# use a temporary file to trim the list
+tmpfile="$(mktemp)"
+if grep -v "${list[choice]}" ~/.fehchoices > "$tmpfile" ; then
+  # the new list is trimmed
+  mv "$tmpfile" ~/.fehchoices
+else
+  # nothing remaining, remove the tmp file and the list file
+  rm -f "$tmpfile" ~/.fehchoices
 fi
