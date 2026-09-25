@@ -12,7 +12,10 @@ bgdir="/usr/share/backgrounds"
 # Number of xscreensaver processes
 mapfile -t list < <(pgrep xscreensaver)
 # If the screensaver isn't active
-if [ "${#list[@]}" -lt 2 ] ; then
+# Check the number (while no screensaver is active)
+# `pgrep xscreensaver` prints matching PIDs
+# if there is 1 then -lt 2, if there are 2 then -le 2
+if [ "${#list[@]}" -le 2 ] ; then
   # Fill the choice list when no choices available
   [ -s ~/.fehchoices ] || ls "$bgdir"/*.* > ~/.fehchoices
   # The list of choices
