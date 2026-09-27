@@ -6,10 +6,10 @@
 bgdir="/usr/share/backgrounds"
 
 # Don't run if the display is off
-if xset q 2>/dev/null | grep -q 'Monitor is Off' ; then
+if DISPLAY="$DISPLAY" xset q 2>/dev/null | grep -q 'Monitor is Off' ; then
   exit 0
 # Don't run if xscreensaver is running
-elif xscreensaver-command -time 2>/dev/null |
+elif DISPLAY="$DISPLAY" xscreensaver-command -time 2>/dev/null |
     grep -qE 'screen (blanked|locked)' ; then
   exit 0
 fi
