@@ -36,7 +36,7 @@ if [ ! -f "$backgrounds" ] || [ ! -s "$backgrounds" ] ; then
   # shuffled
   mapfile -d '' -t list < <(shuf -ez "${list[@]}")
   # store the shuffled list to consume as we cycle backgrounds
-  printf "%s\n" "${list[@]}" >> "$backgrounds"
+  printf "%s\n" "${list[@]}" > "$backgrounds"
 fi
 
 # Choose the last
