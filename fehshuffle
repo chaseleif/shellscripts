@@ -33,10 +33,8 @@ if [ ! -f "$backgrounds" ] || [ ! -s "$backgrounds" ] ; then
   # The list of choices
   shopt -s nullglob
   list=("$bgdir"/*)
-  # shuffled
-  mapfile -d '' -t list < <(shuf -ez "${list[@]}")
-  # store the shuffled list to consume as we cycle backgrounds
-  printf "%s\n" "${list[@]}" > "$backgrounds"
+  # shuffle and write to file
+  shuf -e -o "$backgrounds" "${list[@]}"
 fi
 
 # Choose the last
