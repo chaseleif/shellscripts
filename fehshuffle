@@ -4,42 +4,48 @@
 : "${DISPLAY:=":0"}"
 # The path to choose images from
 bgdir="/usr/share/backgrounds"
+# The (created) shuffled background choices
+backgrounds="${HOME}/.fehchoices"
 
-# Don't run if the display is off
 if DISPLAY="$DISPLAY" xset q 2>/dev/null | grep -q 'Monitor is Off' ; then
+  # Don't run if the display is off
   exit 0
-# Don't run if xscreensaver is running
 elif DISPLAY="$DISPLAY" xscreensaver-command -time 2>/dev/null |
     grep -qE 'screen (blanked|locked)' ; then
+  # Don't run if xscreensaver is running
   exit 0
 fi
 
 # An argument is given when used as a startup script
 if [ -n "$1" ] ; then
   # commands here run once on X login, with a slight delay
-  xrdb -merge ~/.Xresources
-  # Reuse the last background set
-  if [ -f ~/.fehbg ] ; then
-    ~/.fehbg
+  xrdb -merge "${HOME}/.Xresources"
+  # Restore the last background
+  if [ -x "${HOME}/.fehbg" ] ; then
+    "${HOME}/.fehbg"
     exit 0
   fi
-  # No background was set, proceed to set a background
+  # No background to restore, proceed to set a background
 fi
 
-# Fill the choice list when no choices available
-[ -s ~/.fehchoices ] || ls "$bgdir"/* > ~/.fehchoices
-# The list of choices
-mapfile -t list < ~/.fehchoices
-# The choice index
-choice=$((RANDOM % ${#list[@]}))
-# Set the background
-DISPLAY="$DISPLAY" /usr/bin/feh -z --bg-fill "${list[choice]}"
-# use a temporary file to trim the list
-tmpfile="$(mktemp)"
-if grep -v "${list[choice]}" ~/.fehchoices > "$tmpfile" ; then
-  # the new list is trimmed
-  mv "$tmpfile" ~/.fehchoices
-else
-  # nothing remaining, remove the tmp file and the list file
-  rm -f "$tmpfile" ~/.fehchoices
+# Fill the choice list
+if [ ! -f "$backgrounds" ] || [ ! -s "$backgrounds" ] ; then
+  # The list of choices
+  shopt -s nullglob
+  list=("$bgdir"/*)
+  # shuffled
+  mapfile -d '' -t list < <(shuf -ez "${list[@]}")
+  # store the shuffled list to consume as we cycle backgrounds
+  printf "%s\n" "${list[@]}" >> "$backgrounds"
 fi
+
+# Choose the last
+bg="$(tail -n1 "$backgrounds")"
+
+# Remove the last from the choice list
+tmpfile="$(mktemp)"
+head -n -1 "$backgrounds" > "$tmpfile"
+mv "$tmpfile" "$backgrounds"
+
+# Set the background
+DISPLAY="$DISPLAY" /usr/bin/feh -z --bg-fill "$bg"
