@@ -29,7 +29,7 @@ if [ -n "$1" ] ; then
 fi
 
 # Fill the choice list
-if [ ! -f "$backgrounds" ] || [ ! -s "$backgrounds" ] ; then
+if [ ! -s "$backgrounds" ] ; then
   # The list of choices
   shopt -s nullglob
   list=("$bgdir"/*)
