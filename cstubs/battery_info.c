@@ -32,7 +32,7 @@ int main(int argc,char **argv) {
   fclose(infile);
 
   fprintf(stdout, "Battery %.1f%%", 100.0f * now / full);
-  if (!strcmp(status, "Not charging"))
+  if (!microamperehours || !strcmp(status, "Not charging"))
     fprintf(stdout, "\n");
   else if (!strcmp(status, "Charging"))
     fprintf(stdout, ", %.1f minutes until charged\n",
