@@ -21,6 +21,7 @@ int main(int argc,char **argv) {
   infile = fopen(INFODIR "/charge_now", "r");
   if (!infile) errorquit(INFODIR "/charge_now");
   fscanf(infile, "%d", &now);
+  fclose(infile);
   infile = fopen(INFODIR "/current_now", "r");
   if (!infile) errorquit(INFODIR "/current_now");
   fscanf(infile, "%d", &microamperehours);
