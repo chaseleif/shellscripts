@@ -8,7 +8,7 @@
 do { \
     perror(msg); \
     return EXIT_FAILURE; \
-}while(0);
+}while(0)
 
 int main(int argc,char **argv) {
   int full, now, microamperehours;
@@ -27,13 +27,13 @@ int main(int argc,char **argv) {
   fscanf(infile, "%d", &microamperehours);
   fclose(infile);
   infile = fopen(INFODIR "/status", "r");
-  if (!infile) errorquit(INFODIR "/status")
+  if (!infile) errorquit(INFODIR "/status");
   fscanf(infile, "%15[^\n]s", status);
   fclose(infile);
 
   fprintf(stdout, "Battery %.1f%%", 100.0f * now / full);
   if (!microamperehours || !strcmp(status, "Not charging"))
-    fprintf(stdout, "\n");
+    fprintf(stdout, ", not charging\n");
   else if (!strcmp(status, "Charging"))
     fprintf(stdout, ", %.1f minutes until charged\n",
                     60.0*(full-now)/microamperehours);
