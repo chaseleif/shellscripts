@@ -1,0 +1,36 @@
+#! /usr/bin/env bash
+
+read -r output currentval < <(
+  xrandr --verbose | awk '
+    /^[^[:space:]].* connected/ {
+      output = $1
+      primary = ($0 ~ / connected primary /)
+      next
+    }
+    primary && /Brightness:/ {
+      printf "%s %d\n", output, $2 * 100 + 0.5
+      exit
+    }
+  '
+)
+if newval="$(yad \
+              --scale \
+              --text="brightness" \
+              --text-align=center \
+              --undecorated \
+              --width=10 \
+              --height=180 \
+              --on-top \
+              --skip-taskbar \
+              --close-on-unfocus \
+              --value "$currentval" \
+              --min-value 0 \
+              --max-value 100 \
+              --step=1 \
+              --mark=Min:0 \
+              --mark=Max:100 \
+              --button="Ok"!yad-ok! \
+              --vertical)" ; then
+  newval="$(bc <<< "scale=2; $newval / 100")"
+  xrandr --output "$output" --brightness "$newval"
+fi
