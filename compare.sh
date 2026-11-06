@@ -2,12 +2,9 @@
 
 print_usage() {
   [ -n "$1" ] && printf "%s\n" "$@"
-  printf "Usage: %s a/ b/\n" "$BASH_SOURCE"
+  printf "Usage: %s a/ b/\n" "${BASH_SOURCE[0]}"
   exit
 }
-
-hline="------------------------------"
-printf "%s\n" "$hline"
 
 a="$1"
 shift
@@ -15,13 +12,15 @@ b="$1"
 shift
 if [ -z "$a" ] || [ -z "$b" ] ; then
   print_usage "No directories to compare"
-fi
-if [ ! -d "$a" ] ; then
+elif [ ! -d "$a" ] ; then
   print_usage "\"$a\" is not a valid directory"
 elif [ ! -d "$b" ] ; then
   print_usage "\"$b\" is not a valid directory"
 fi
 
+hline="------------------------------"
+
+printf "%s\n" "$hline"
 printf "  +a: only found in a\n"
 printf "a!=b: file in a differs from b\n"
 printf "  +b: only found in b\n"
