@@ -24,6 +24,7 @@ unset files
 choices=("Run Server" "Download New" "${!models[@]}" "Quit")
 
 # get the choice
+# shellcheck disable=SC1091 # shellcheck on choiceprompt.sh is good already
 source "$shellscripts"/choiceprompt.sh
 getchoice choice "${choices[@]}"
 unset -f getchoice
@@ -32,9 +33,9 @@ unset -f getchoice
 # if we do a command we set -x to echo the command ran
 if [ "$choice" == "Run Server" ] ; then
   unset choice choices models
-  # use exec to exit this script with llama-server
   set -x
-  exec "$llamacppbin"/llama-server
+  "$llamacppbin"/llama-server
+  exit 0
 elif [ "$choice" == "Download New" ] ; then
   # download a model from Hugging Face, get the name
   echo "HF repo format, expect <user>/model>[:quant]"
@@ -58,7 +59,7 @@ fi
 unset choice choices models
 # run the command
 set -x
-exec "$llamacppbin"/llama-cli \
+"$llamacppbin"/llama-cli \
   "$modelflag" "$model" \
   --jinja \
   --color on \
