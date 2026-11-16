@@ -34,7 +34,7 @@ if [ ! -s "$backgrounds" ] ; then
   shopt -s nullglob
   list=("$bgdir"/*)
   # shuffle and write to file
-  shuf -e -o "$backgrounds" "${list[@]}"
+  shuf --random-source=/dev/urandom --output="$backgrounds" --echo "${list[@]}"
 fi
 
 # Choose the last
