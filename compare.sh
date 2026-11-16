@@ -30,7 +30,10 @@ a="$(realpath "$a")"
 b="$(realpath "$b")"
 
 cd "$a" || exit
-mapfile -d '' files < <(find . -type f -print0)
+
+# ignore all files and directories that begin with a period
+# -path "*/.*" -prune -or
+mapfile -d '' files < <(find . -path "*/.*" -prune -or -type f -print0)
 for name in "${files[@]}" ; do
   if [ ! -f "$b/$name" ] ; then
     printf "  +a: %s\n" "$name"
@@ -39,7 +42,7 @@ for name in "${files[@]}" ; do
   fi
 done
 cd "$b" || exit
-mapfile -d '' files < <(find . -type f -print0)
+mapfile -d '' files < <(find . -path "*/.*" -prune -or -type f -print0)
 for name in "${files[@]}" ; do
   if [ ! -f "$a/$name" ] ; then
     printf "  +b: %s\n" "$name"
